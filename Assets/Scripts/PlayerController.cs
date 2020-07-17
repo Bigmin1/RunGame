@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
    private Rigidbody2D playerRigidbody; // 사용할 리지드바디 컴포넌트
    private Animator animator; // 사용할 애니메이터 컴포넌트
    private AudioSource playerAudio; // 사용할 오디오 소스 컴포넌트
+    public float speed = 10f;
 
    private void Start() {
         playerRigidbody = GetComponent<Rigidbody2D>();
@@ -20,9 +21,9 @@ public class PlayerController : MonoBehaviour {
    }
 
    private void Update() {
-        if (isDead)
+        if (!GameManager.instance.isGameover)
         {
-            return;
+            transform.Translate(Vector3.left * speed * Time.deltaTime);
         }
 
         if (Input.GetMouseButtonDown(0) && jumpCount < 2)
@@ -47,7 +48,7 @@ public class PlayerController : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Daed" && !isDead)
+        if (other.tag == "Dead" && !isDead)
         {
             Die();
 
@@ -55,7 +56,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void Die() {
-        {
+        
 
             animator.SetTrigger("Die");
 
@@ -66,7 +67,9 @@ public class PlayerController : MonoBehaviour {
             playerRigidbody.velocity = Vector2.zero;
 
             isDead = true;
-        }
+
+            GameManager.instance.OnPlayerDead();
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
